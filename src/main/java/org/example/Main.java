@@ -1,6 +1,8 @@
 package org.example;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -23,15 +25,19 @@ public class Main {
 
     public static void main(String[] args) throws IOException, ParseException {
         System.out.println("Hello world!");
-
+/*
         addBook();
         getAllBooks();
-/*
+
         getOneBook(1);
         getOneBook(2);
         getOneBook(3);
 
  */
+
+        getOneBookByTitle();
+
+
     }
 
     public static void getAllBooks() throws IOException, ParseException {
@@ -142,4 +148,32 @@ public class Main {
             System.out.println("Something went wrong!");
         }
     }
+
+    public static void getOneBookByTitle() throws IOException {
+
+        //Get BookTitle from user
+        String title = getStringInput("Skriv in namnet på den bok du söker:");
+
+        //Skapa en Request
+        HttpGet request = new HttpGet(String.format("http://localhost:8080/books/book/%s", title));
+
+        //Skicka request
+        CloseableHttpResponse response = httpClient.execute(request);
+
+        //Get Payload
+        HttpEntity payload = response.getEntity();
+
+        //Konvertera Payload till Book
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            Book book = mapper.readValue(EntityUtils.toString(payload), new TypeReference<Book>() {});
+            System.out.println(book.toString());
+        }  catch (Exception e) {
+            System.out.println("Ett fel har skett!");
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+
 }
