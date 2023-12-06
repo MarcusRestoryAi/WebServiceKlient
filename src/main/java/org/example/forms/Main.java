@@ -69,7 +69,7 @@ public class Main {
 
                     //BooksForm booksForm1 = new BooksForm();
 
-                    jFrame.setContentPane(new BooksForm().form);
+                    jFrame.setContentPane(new BooksForm(login).form);
 
 
                 }

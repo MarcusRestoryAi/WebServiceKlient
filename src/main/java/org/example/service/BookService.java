@@ -24,7 +24,7 @@ public class BookService {
 
     private static final CloseableHttpClient httpClient = HttpClients.createDefault();
 
-    public static void getAllBooks(String jwt) throws IOException, ParseException {
+    public static ArrayList<Book> getAllBooks(String jwt) throws IOException, ParseException {
 
         //Skapa ett objekt av HttpGet klassen. INkludera URL
         HttpGet request = new HttpGet("http://localhost:8080/books");
@@ -37,7 +37,7 @@ public class BookService {
 
         if (response.getCode() != 200) {
             System.out.println("Error uppstod");
-            return;
+            return null;
         }
 
         //Visa upp response payload i console
@@ -52,6 +52,8 @@ public class BookService {
         for (Book book : books) {
             System.out.println(String.format("Boken %s är skriven av %s", book.getTitle(), book.getAuthor()));
         }
+
+        return books;
     }
 
     public static void getOneBook(int id, String jwt) throws IOException, ParseException {
