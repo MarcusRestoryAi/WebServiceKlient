@@ -95,4 +95,40 @@ public class UserService {
         System.out.println(String.format("JWT token: %s", loginResponse.getJwt()));
         return loginResponse;
     }
+
+    public static LoginResponse login(String username, String password) throws IOException, ParseException {
+
+        //Skapa ett nytt User objekt
+        User loginUser = new User(0L, username, password);
+
+        //Skapa ett nytt request
+        HttpPost request = new HttpPost("http://localhost:8080/auth/login");
+
+        //Skapa en Payload till Request
+        request.setEntity(createPayload(loginUser));
+
+        //Send request
+        CloseableHttpResponse response = httpClient.execute(request);
+
+        if (response.getCode() != 200 ) {
+            System.out.println("Något har gått fel vid Inloggning");
+            return null;
+        }
+
+        //Hämta Payload från repsonse
+        HttpEntity payload = response.getEntity();
+
+        //Skapa User objekt från payload
+        ObjectMapper mapper = new ObjectMapper();
+        LoginResponse loginResponse = mapper.readValue(EntityUtils.toString(payload), new TypeReference<LoginResponse>() {});
+
+        if (loginResponse.getUser() == null) {
+            System.out.println("Felaktigt användarnamn eller lösenord");
+            return null;
+        }
+
+        System.out.println(String.format("Inloggad som %s", loginResponse.getUser().getUsername()));
+        System.out.println(String.format("JWT token: %s", loginResponse.getJwt()));
+        return loginResponse;
+    }
 }
